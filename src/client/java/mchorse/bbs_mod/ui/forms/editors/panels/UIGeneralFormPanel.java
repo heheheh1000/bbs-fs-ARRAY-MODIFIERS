@@ -151,7 +151,7 @@ public class UIGeneralFormPanel extends UIFormPanel
         UITrackpad scaleZ = UIValues.trackpad(() -> this.form.arrayScaleZ);
         array.fields.add(
             UI.labelRow(IKey.constant("Count"), arrayCount),
-            UI.labelRow(IKey.constant("Relative Offset X / Y / Z"), UI.row(relativeX, relativeY, relativeZ)),
+            UI.labelRow(IKey.constant("Relative Offset X / Y / Z (Form scale)"), UI.row(relativeX, relativeY, relativeZ)),
             UI.labelRow(IKey.constant("Constant Offset X / Y / Z"), UI.row(constantX, constantY, constantZ)),
             UI.labelRow(IKey.constant("Rotation Offset X / Y / Z (degrees)"), UI.row(rotationX, rotationY, rotationZ)),
             UI.labelRow(IKey.constant("Scale Offset X / Y / Z"), UI.row(scaleX, scaleY, scaleZ))
