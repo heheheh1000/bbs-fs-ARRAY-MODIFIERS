@@ -316,9 +316,9 @@ public class UIFormEditor extends UIElement implements IUIFormList, ICursor, IBo
         this.removeFormList = new UIIcon(Icons.REMOVE, (b) -> this.removeBodyPart());
         this.removeFormList.tooltip(UIKeys.FORMS_EDITOR_CONTEXT_REMOVE);
         this.copyTransform = new UIIcon(Icons.COPY, (b) -> this.copySelectedTransform());
-        this.copyTransform.tooltip("Copy Transform (Position, Rotation, Scale)");
+        this.copyTransform.tooltip(UIKeys.FORMS_EDITOR_CONTEXT_COPY);
         this.applyTransform = new UIIcon(Icons.PASTE, (b) -> this.applyCopiedTransform());
-        this.applyTransform.tooltip("Apply Transform to Selected Model");
+        this.applyTransform.tooltip(UIKeys.FORMS_EDITOR_CONTEXT_PASTE);
 
         UIElement listToolbar = new UIElement();
         listToolbar.relative(listSection).w(1F).h(20).row(0).padding(0).height(20);
