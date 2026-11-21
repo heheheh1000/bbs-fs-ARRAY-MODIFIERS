@@ -22,6 +22,9 @@ public class MobForm extends Form implements IPosedForm
     public final ValuePose pose = new ValuePose("pose", new Pose());
     public final ValuePose poseOverlay = new ValuePose("pose_overlay", new Pose());
 
+    /** Independent additive pose layer for replay player body disassembly. */
+    public final ValuePose disassemblyPose = new ValuePose("pose_overlay_disassembly", new Pose());
+
     public final ValueBoolean boneTracks = new ValueBoolean("bone_tracks", true);
 
     public MobForm()
@@ -33,6 +36,7 @@ public class MobForm extends Form implements IPosedForm
         this.add(this.mobNBT);
         this.add(this.pose);
         this.add(this.poseOverlay);
+        this.add(this.disassemblyPose);
         this.syncOverlayTracks();
         this.add(this.texture);
         this.add(this.slim);
