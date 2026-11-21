@@ -85,7 +85,12 @@ public class UIMobFormPanel extends UIFormPanel<MobForm>
         this.disassemblySection.setVisible(form.isPlayer());
         this.disassemblyEditor.setValuePose(form.disassemblyPose);
         this.disassemblyEditor.setPose(form.disassemblyPose.get(), "player_disassembly");
-        this.disassemblyEditor.fillGroups(rig, null, true, null);
+        java.util.List<String> playerBones = new java.util.ArrayList<>();
+        for (net.minecraft.client.model.ModelPart part : PlayerBodyParts.resolve(form, rig).values())
+        {
+            playerBones.add(rig.name(part));
+        }
+        this.disassemblyEditor.fillGroups(playerBones, true);
 
         this.options.resize();
     }
