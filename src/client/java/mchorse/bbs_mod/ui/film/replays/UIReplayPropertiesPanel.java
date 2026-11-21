@@ -7,6 +7,7 @@ import java.util.function.BiFunction;
 import java.util.function.Supplier;
 
 import mchorse.bbs_mod.film.replays.Replay;
+import mchorse.bbs_mod.forms.FormUtils;
 import mchorse.bbs_mod.forms.forms.Form;
 import mchorse.bbs_mod.forms.forms.MobForm;
 import mchorse.bbs_mod.l10n.keys.IKey;
@@ -14,6 +15,7 @@ import mchorse.bbs_mod.settings.values.base.BaseValue;
 import mchorse.bbs_mod.ui.UIKeys;
 import mchorse.bbs_mod.ui.film.UIFilmPanel;
 import mchorse.bbs_mod.ui.forms.UINestedEdit;
+import mchorse.bbs_mod.ui.forms.UIFormPalette;
 import mchorse.bbs_mod.ui.framework.elements.UIElement;
 import mchorse.bbs_mod.ui.framework.elements.UISection;
 import mchorse.bbs_mod.ui.framework.elements.buttons.UIButton;
@@ -186,11 +188,27 @@ public class UIReplayPropertiesPanel extends UIElement
             {
                 MobForm player = new MobForm();
                 player.mobID.set("minecraft:player");
+                form = player;
                 selected.form.set(player);
-                this.pickEdit.setForm(player);
             }
 
-            this.list.openFormEditor(selected.form, true, this.pickEdit::setForm);
+            /* Open the editor directly. The normal replay form-picker path can be blocked by
+             * another palette already attached to the root, which made this button appear inert.
+             * The ignore flag is safe here: this action is an explicit request to edit this form. */
+            UIElement target = this.list.getParentContainer();
+
+            if (target == null)
+            {
+                target = this.list;
+            }
+
+            Form initial = form;
+            UIFormPalette.open(target, true, initial, true, (edited) ->
+            {
+                selected.form.set(FormUtils.copy(edited));
+                this.pickEdit.setForm(edited);
+                this.list.updateFilmEditor();
+            });
         });
 
         UISection shadowSection = new UISection(UIKeys.FILM_REPLAY_SHADOW);
