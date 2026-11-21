@@ -134,9 +134,13 @@ public class UIGeneralFormPanel extends UIFormPanel
             UI.labelRow(UIKeys.FORMS_EDITORS_GENERAL_STEP_HEIGHT, this.stepHeight)
         );
 
-        UISection array = new UISection(IKey.constant("Array Modifier"));
-        UITrackpad arrayCount = UIValues.trackpad(() -> this.form.arrayCount);
-        arrayCount.limit(1D, 64D);
+        UISection array = new UISection(IKey.constant("Array Modifier — 3D Grid"));
+        UITrackpad arrayCountX = UIValues.trackpad(() -> this.form.arrayCountX);
+        arrayCountX.limit(1D, 64D);
+        UITrackpad arrayCountY = UIValues.trackpad(() -> this.form.arrayCountY);
+        arrayCountY.limit(1D, 64D);
+        UITrackpad arrayCountZ = UIValues.trackpad(() -> this.form.arrayCountZ);
+        arrayCountZ.limit(1D, 64D);
         UITrackpad relativeX = UIValues.trackpad(() -> this.form.arrayRelativeX);
         UITrackpad relativeY = UIValues.trackpad(() -> this.form.arrayRelativeY);
         UITrackpad relativeZ = UIValues.trackpad(() -> this.form.arrayRelativeZ);
@@ -150,7 +154,7 @@ public class UIGeneralFormPanel extends UIFormPanel
         UITrackpad scaleY = UIValues.trackpad(() -> this.form.arrayScaleY);
         UITrackpad scaleZ = UIValues.trackpad(() -> this.form.arrayScaleZ);
         array.fields.add(
-            UI.labelRow(IKey.constant("Count"), arrayCount),
+            UI.labelRow(IKey.constant("Count X / Y / Z"), UI.row(arrayCountX, arrayCountY, arrayCountZ)),
             UI.labelRow(IKey.constant("Relative Offset X / Y / Z (Form scale)"), UI.row(relativeX, relativeY, relativeZ)),
             UI.labelRow(IKey.constant("Constant Offset X / Y / Z"), UI.row(constantX, constantY, constantZ)),
             UI.labelRow(IKey.constant("Rotation Offset X / Y / Z (degrees)"), UI.row(rotationX, rotationY, rotationZ)),
