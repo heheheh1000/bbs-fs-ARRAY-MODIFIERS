@@ -143,9 +143,10 @@ public abstract class FormRenderer <T extends Form>
 
             if (i > 0)
             {
-                float x = i * (this.form.arrayRelativeX.get() + this.form.arrayConstantX.get());
-                float y = i * (this.form.arrayRelativeY.get() + this.form.arrayConstantY.get());
-                float z = i * (this.form.arrayRelativeZ.get() + this.form.arrayConstantZ.get());
+                Transform baseTransform = this.createEvaluatedTransform(context.getTransition());
+                float x = i * (this.form.arrayRelativeX.get() * baseTransform.scale.x + this.form.arrayConstantX.get());
+                float y = i * (this.form.arrayRelativeY.get() * baseTransform.scale.y + this.form.arrayConstantY.get());
+                float z = i * (this.form.arrayRelativeZ.get() * baseTransform.scale.z + this.form.arrayConstantZ.get());
 
                 context.stack.translate(x, y, z);
                 if (context.world != null) context.world.translate(x, y, z);
@@ -171,10 +172,15 @@ public abstract class FormRenderer <T extends Form>
                 if (context.world != null) context.world.scale(sx, sy, sz);
             }
 
-            this.renderSingle(context);
-
-            context.stack.pop();
-            if (context.world != null) context.world.pop();
+            try
+            {
+                this.renderSingle(context);
+            }
+            finally
+            {
+                context.stack.pop();
+                if (context.world != null) context.world.pop();
+            }
         }
     }
 
