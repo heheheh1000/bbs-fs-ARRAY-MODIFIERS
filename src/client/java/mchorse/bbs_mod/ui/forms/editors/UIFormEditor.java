@@ -84,6 +84,7 @@ import mchorse.bbs_mod.utils.Direction;
 import mchorse.bbs_mod.utils.MathUtils;
 import mchorse.bbs_mod.utils.Pair;
 import mchorse.bbs_mod.utils.presets.PresetManager;
+import mchorse.bbs_mod.utils.pose.Transform;
 import mchorse.bbs_mod.utils.resources.FilteredLink;
 import mchorse.bbs_mod.utils.resources.MultiLink;
 import org.joml.Matrix4f;
@@ -140,6 +141,9 @@ public class UIFormEditor extends UIElement implements IUIFormList, ICursor, IBo
     private Consumer<Form> callback;
     private UICopyPasteController copyPasteController;
     private UIFormUndoHandler undoHandler;
+    private Transform transformClipboard;
+    private UIIcon copyTransform;
+    private UIIcon applyTransform;
 
     private int lastTick;
     private int cursor;
@@ -311,10 +315,14 @@ public class UIFormEditor extends UIElement implements IUIFormList, ICursor, IBo
         this.pasteFormList.tooltip(UIKeys.FORMS_EDITOR_CONTEXT_PASTE);
         this.removeFormList = new UIIcon(Icons.REMOVE, (b) -> this.removeBodyPart());
         this.removeFormList.tooltip(UIKeys.FORMS_EDITOR_CONTEXT_REMOVE);
+        this.copyTransform = new UIIcon(Icons.COPY, (b) -> this.copySelectedTransform());
+        this.copyTransform.tooltip("Copy Transform (Position, Rotation, Scale)");
+        this.applyTransform = new UIIcon(Icons.PASTE, (b) -> this.applyCopiedTransform());
+        this.applyTransform.tooltip("Apply Transform to Selected Model");
 
         UIElement listToolbar = new UIElement();
         listToolbar.relative(listSection).w(1F).h(20).row(0).padding(0).height(20);
-        for (UIIcon icon : new UIIcon[] {this.addFormList, this.bodyPartGizmoIcon, this.copyFormList, this.pasteFormList, this.removeFormList})
+        for (UIIcon icon : new UIIcon[] {this.addFormList, this.bodyPartGizmoIcon, this.copyFormList, this.pasteFormList, this.copyTransform, this.applyTransform, this.removeFormList})
         {
             UIElement cell = new UIElement();
             icon.relative(cell).x(0.5F).y(0.5F).anchor(0.5F, 0.5F);
@@ -944,6 +952,35 @@ public class UIFormEditor extends UIElement implements IUIFormList, ICursor, IBo
         this.refillState();
     }
 
+    private void copySelectedTransform()
+    {
+        UIForms.FormEntry current = this.formsList.getCurrentFirst();
+        Form source = current == null ? null : current.getForm();
+
+        if (source == null)
+        {
+            return;
+        }
+
+        this.transformClipboard = source.transform.getFactory().copy(source.transform.getOriginalValue());
+        this.updateFormListButtons();
+        UIUtils.playClick();
+    }
+
+    private void applyCopiedTransform()
+    {
+        UIForms.FormEntry current = this.formsList.getCurrentFirst();
+        Form target = current == null ? null : current.getForm();
+
+        if (target == null || this.transformClipboard == null)
+        {
+            return;
+        }
+
+        target.transform.set(target.transform.getFactory().copy(this.transformClipboard));
+        UIUtils.playClick();
+    }
+
     private void updateFormListButtons()
     {
         UIForms.FormEntry current = this.formsList.getCurrentFirst();
@@ -953,6 +990,8 @@ public class UIFormEditor extends UIElement implements IUIFormList, ICursor, IBo
         this.copyFormList.setEnabled(this.copyPasteController.canCopy());
         this.pasteFormList.setEnabled(this.copyPasteController.canPaste());
         this.removeFormList.setEnabled(current != null && current.part != null);
+        this.copyTransform.setEnabled(current != null && current.getForm() != null);
+        this.applyTransform.setEnabled(current != null && current.getForm() != null && this.transformClipboard != null);
     }
 
     private void pickForm(UIForms.FormEntry entry)
