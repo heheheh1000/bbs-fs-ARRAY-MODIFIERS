@@ -29,6 +29,7 @@ import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.client.render.LightmapTextureManager;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Hand;
+import net.minecraft.util.math.RotationAxis;
 import org.joml.Vector3f;
 import org.joml.Matrix4f;
 
@@ -132,6 +133,52 @@ public abstract class FormRenderer <T extends Form>
     }
 
     public final void render(FormRenderingContext context)
+    {
+        int count = Math.max(1, Math.min(64, this.form.arrayCount.get()));
+
+        for (int i = 0; i < count; i++)
+        {
+            context.stack.push();
+            if (context.world != null) context.world.push();
+
+            if (i > 0)
+            {
+                float x = i * (this.form.arrayRelativeX.get() + this.form.arrayConstantX.get());
+                float y = i * (this.form.arrayRelativeY.get() + this.form.arrayConstantY.get());
+                float z = i * (this.form.arrayRelativeZ.get() + this.form.arrayConstantZ.get());
+
+                context.stack.translate(x, y, z);
+                if (context.world != null) context.world.translate(x, y, z);
+
+                float rx = i * this.form.arrayRotationX.get();
+                float ry = i * this.form.arrayRotationY.get();
+                float rz = i * this.form.arrayRotationZ.get();
+
+                context.stack.multiply(RotationAxis.POSITIVE_X.rotationDegrees(rx));
+                context.stack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(ry));
+                context.stack.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(rz));
+                if (context.world != null)
+                {
+                    context.world.multiply(RotationAxis.POSITIVE_X.rotationDegrees(rx));
+                    context.world.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(ry));
+                    context.world.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(rz));
+                }
+
+                float sx = 1F + i * this.form.arrayScaleX.get();
+                float sy = 1F + i * this.form.arrayScaleY.get();
+                float sz = 1F + i * this.form.arrayScaleZ.get();
+                context.stack.scale(sx, sy, sz);
+                if (context.world != null) context.world.scale(sx, sy, sz);
+            }
+
+            this.renderSingle(context);
+
+            context.stack.pop();
+            if (context.world != null) context.world.pop();
+        }
+    }
+
+    private void renderSingle(FormRenderingContext context)
     {
         if (!this.form.shaderShadow.get() && BBSRendering.isIrisShadowPass())
         {
