@@ -37,8 +37,15 @@ public class MobPoseApplier
 
     public static Pose merge(Pose pose, Pose overlay, List<ValuePose> additional)
     {
+        return merge(pose, overlay, null, additional);
+    }
+
+    /** Merge the regular pose layers and an optional independent disassembly layer. */
+    public static Pose merge(Pose pose, Pose overlay, Pose disassembly, List<ValuePose> additional)
+    {
         Pose merged = pose.copy();
         applyOverlay(merged, overlay);
+        applyOverlay(merged, disassembly);
         for (ValuePose value : additional) applyOverlay(merged, value.get());
         return merged;
     }
