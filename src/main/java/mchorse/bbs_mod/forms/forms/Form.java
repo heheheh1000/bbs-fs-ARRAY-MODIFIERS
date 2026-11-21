@@ -55,6 +55,22 @@ public abstract class Form extends ValueGroup
     public final ValueString trackName = new ValueString("track_name", "");
     public final ValueFloat lighting = new ValueFloat("lighting", 1F);
 
+    /* Form-level Array modifier. Count includes the original form. */
+    public final ValueInt arrayCount = new ValueInt("array_count", 1);
+    public final ValueFloat arrayRelativeX = new ValueFloat("array_relative_x", 0F);
+    public final ValueFloat arrayRelativeY = new ValueFloat("array_relative_y", 0F);
+    public final ValueFloat arrayRelativeZ = new ValueFloat("array_relative_z", 0F);
+    public final ValueFloat arrayConstantX = new ValueFloat("array_constant_x", 0F);
+    public final ValueFloat arrayConstantY = new ValueFloat("array_constant_y", 0F);
+    public final ValueFloat arrayConstantZ = new ValueFloat("array_constant_z", 0F);
+    public final ValueFloat arrayRotationX = new ValueFloat("array_rotation_x", 0F);
+    public final ValueFloat arrayRotationY = new ValueFloat("array_rotation_y", 0F);
+    public final ValueFloat arrayRotationZ = new ValueFloat("array_rotation_z", 0F);
+    public final ValueFloat arrayScaleX = new ValueFloat("array_scale_x", 0F);
+    public final ValueFloat arrayScaleY = new ValueFloat("array_scale_y", 0F);
+    public final ValueFloat arrayScaleZ = new ValueFloat("array_scale_z", 0F);
+
+
     /** Color overlay (RGB = color, A = strength): mixes the rendered pixels toward the color, surviving shader packs. */
     public final ValueColor overlayColor = new ValueColor("color_overlay", new Color(1F, 1F, 1F, 0F));
 
@@ -153,6 +169,20 @@ public abstract class Form extends ValueGroup
         this.add(this.disabledTracks);
         this.add(this.trackName);
         this.add(this.lighting);
+        this.add(this.arrayCount);
+        this.add(this.arrayRelativeX);
+        this.add(this.arrayRelativeY);
+        this.add(this.arrayRelativeZ);
+        this.add(this.arrayConstantX);
+        this.add(this.arrayConstantY);
+        this.add(this.arrayConstantZ);
+        this.add(this.arrayRotationX);
+        this.add(this.arrayRotationY);
+        this.add(this.arrayRotationZ);
+        this.add(this.arrayScaleX);
+        this.add(this.arrayScaleY);
+        this.add(this.arrayScaleZ);
+
         this.add(this.overlayColor);
         this.add(this.renderLayer);
         this.add(this.renderLast);
