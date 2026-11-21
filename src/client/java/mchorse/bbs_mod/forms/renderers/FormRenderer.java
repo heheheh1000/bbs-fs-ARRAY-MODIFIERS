@@ -134,52 +134,76 @@ public abstract class FormRenderer <T extends Form>
 
     public final void render(FormRenderingContext context)
     {
-        int count = Math.max(1, Math.min(64, this.form.arrayCount.get()));
+        int countX = Math.max(1, Math.min(64, this.form.arrayCountX.get()));
+        int countY = Math.max(1, Math.min(64, this.form.arrayCountY.get()));
+        int countZ = Math.max(1, Math.min(64, this.form.arrayCountZ.get()));
 
-        for (int i = 0; i < count; i++)
+        /* Keep old projects working: their former Count becomes the X-axis count. */
+        if (countX == 1 && countY == 1 && countZ == 1 && this.form.arrayCount.get() > 1)
         {
-            context.stack.push();
-            if (context.world != null) context.world.push();
+            countX = Math.max(1, Math.min(64, this.form.arrayCount.get()));
+        }
 
-            if (i > 0)
+        /* A 64x64x64 array can freeze a low-end machine. Keep the total bounded. */
+        final int maxInstances = 4096;
+        int rendered = 0;
+        Transform baseTransform = this.createEvaluatedTransform(context.getTransition());
+
+        float stepX = this.form.arrayRelativeX.get() * baseTransform.scale.x + this.form.arrayConstantX.get();
+        float stepY = this.form.arrayRelativeY.get() * baseTransform.scale.y + this.form.arrayConstantY.get();
+        float stepZ = this.form.arrayRelativeZ.get() * baseTransform.scale.z + this.form.arrayConstantZ.get();
+
+        for (int ix = 0; ix < countX && rendered < maxInstances; ix++)
+        {
+            for (int iy = 0; iy < countY && rendered < maxInstances; iy++)
             {
-                Transform baseTransform = this.createEvaluatedTransform(context.getTransition());
-                float x = i * (this.form.arrayRelativeX.get() * baseTransform.scale.x + this.form.arrayConstantX.get());
-                float y = i * (this.form.arrayRelativeY.get() * baseTransform.scale.y + this.form.arrayConstantY.get());
-                float z = i * (this.form.arrayRelativeZ.get() * baseTransform.scale.z + this.form.arrayConstantZ.get());
-
-                context.stack.translate(x, y, z);
-                if (context.world != null) context.world.translate(x, y, z);
-
-                float rx = i * this.form.arrayRotationX.get();
-                float ry = i * this.form.arrayRotationY.get();
-                float rz = i * this.form.arrayRotationZ.get();
-
-                context.stack.multiply(RotationAxis.POSITIVE_X.rotationDegrees(rx));
-                context.stack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(ry));
-                context.stack.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(rz));
-                if (context.world != null)
+                for (int iz = 0; iz < countZ && rendered < maxInstances; iz++)
                 {
-                    context.world.multiply(RotationAxis.POSITIVE_X.rotationDegrees(rx));
-                    context.world.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(ry));
-                    context.world.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(rz));
+                    context.stack.push();
+                    if (context.world != null) context.world.push();
+
+                    if (ix != 0 || iy != 0 || iz != 0)
+                    {
+                        float x = ix * stepX;
+                        float y = iy * stepY;
+                        float z = iz * stepZ;
+
+                        context.stack.translate(x, y, z);
+                        if (context.world != null) context.world.translate(x, y, z);
+
+                        float rx = ix * this.form.arrayRotationX.get();
+                        float ry = iy * this.form.arrayRotationY.get();
+                        float rz = iz * this.form.arrayRotationZ.get();
+
+                        context.stack.multiply(RotationAxis.POSITIVE_X.rotationDegrees(rx));
+                        context.stack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(ry));
+                        context.stack.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(rz));
+                        if (context.world != null)
+                        {
+                            context.world.multiply(RotationAxis.POSITIVE_X.rotationDegrees(rx));
+                            context.world.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(ry));
+                            context.world.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(rz));
+                        }
+
+                        float sx = 1F + ix * this.form.arrayScaleX.get();
+                        float sy = 1F + iy * this.form.arrayScaleY.get();
+                        float sz = 1F + iz * this.form.arrayScaleZ.get();
+                        context.stack.scale(sx, sy, sz);
+                        if (context.world != null) context.world.scale(sx, sy, sz);
+                    }
+
+                    try
+                    {
+                        this.renderSingle(context);
+                    }
+                    finally
+                    {
+                        context.stack.pop();
+                        if (context.world != null) context.world.pop();
+                    }
+
+                    rendered++;
                 }
-
-                float sx = 1F + i * this.form.arrayScaleX.get();
-                float sy = 1F + i * this.form.arrayScaleY.get();
-                float sz = 1F + i * this.form.arrayScaleZ.get();
-                context.stack.scale(sx, sy, sz);
-                if (context.world != null) context.world.scale(sx, sy, sz);
-            }
-
-            try
-            {
-                this.renderSingle(context);
-            }
-            finally
-            {
-                context.stack.pop();
-                if (context.world != null) context.world.pop();
             }
         }
     }
