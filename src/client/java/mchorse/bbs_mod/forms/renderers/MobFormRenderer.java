@@ -65,7 +65,7 @@ public class MobFormRenderer extends FormRenderer<MobForm> implements ITickable
     private Pose getCombinedPose()
     {
         this.form.syncOverlayTracks();
-        return MobPoseApplier.merge(this.form.pose.get(), this.form.poseOverlay.get(), this.form.additionalOverlays);
+        return MobPoseApplier.merge(this.form.pose.get(), this.form.poseOverlay.get(), this.form.disassemblyPose.get(), this.form.additionalOverlays);
     }
 
     @Override
