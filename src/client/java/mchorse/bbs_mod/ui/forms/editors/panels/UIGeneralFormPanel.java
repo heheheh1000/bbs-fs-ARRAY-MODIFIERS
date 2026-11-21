@@ -134,12 +134,36 @@ public class UIGeneralFormPanel extends UIFormPanel
             UI.labelRow(UIKeys.FORMS_EDITORS_GENERAL_STEP_HEIGHT, this.stepHeight)
         );
 
+        UISection array = new UISection(IKey.constant("Array Modifier"));
+        UITrackpad arrayCount = UIValues.trackpad(() -> this.form.arrayCount);
+        arrayCount.limit(1D, 64D);
+        UITrackpad relativeX = UIValues.trackpad(() -> this.form.arrayRelativeX);
+        UITrackpad relativeY = UIValues.trackpad(() -> this.form.arrayRelativeY);
+        UITrackpad relativeZ = UIValues.trackpad(() -> this.form.arrayRelativeZ);
+        UITrackpad constantX = UIValues.trackpad(() -> this.form.arrayConstantX);
+        UITrackpad constantY = UIValues.trackpad(() -> this.form.arrayConstantY);
+        UITrackpad constantZ = UIValues.trackpad(() -> this.form.arrayConstantZ);
+        UITrackpad rotationX = UIValues.trackpad(() -> this.form.arrayRotationX);
+        UITrackpad rotationY = UIValues.trackpad(() -> this.form.arrayRotationY);
+        UITrackpad rotationZ = UIValues.trackpad(() -> this.form.arrayRotationZ);
+        UITrackpad scaleX = UIValues.trackpad(() -> this.form.arrayScaleX);
+        UITrackpad scaleY = UIValues.trackpad(() -> this.form.arrayScaleY);
+        UITrackpad scaleZ = UIValues.trackpad(() -> this.form.arrayScaleZ);
+        array.fields.add(
+            UI.labelRow(IKey.constant("Count"), arrayCount),
+            UI.labelRow(IKey.constant("Relative Offset X / Y / Z"), UI.row(relativeX, relativeY, relativeZ)),
+            UI.labelRow(IKey.constant("Constant Offset X / Y / Z"), UI.row(constantX, constantY, constantZ)),
+            UI.labelRow(IKey.constant("Rotation Offset X / Y / Z (degrees)"), UI.row(rotationX, rotationY, rotationZ)),
+            UI.labelRow(IKey.constant("Scale Offset X / Y / Z"), UI.row(scaleX, scaleY, scaleZ))
+        );
+
         this.options.add(
             display,
             tracks,
             transform,
             hitbox,
-            movement
+            movement,
+            array
         );
     }
 
