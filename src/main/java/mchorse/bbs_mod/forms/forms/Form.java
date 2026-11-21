@@ -55,8 +55,11 @@ public abstract class Form extends ValueGroup
     public final ValueString trackName = new ValueString("track_name", "");
     public final ValueFloat lighting = new ValueFloat("lighting", 1F);
 
-    /* Form-level Array modifier. Count includes the original form. */
-    public final ValueInt arrayCount = new ValueInt("array_count", 1, 1, 64);
+    /* Form-level 3D Array modifier. Each axis count includes the original form. */
+    public final ValueInt arrayCount = new ValueInt("array_count", 1, 1, 64); // Legacy one-axis count
+    public final ValueInt arrayCountX = new ValueInt("array_count_x", 1, 1, 64);
+    public final ValueInt arrayCountY = new ValueInt("array_count_y", 1, 1, 64);
+    public final ValueInt arrayCountZ = new ValueInt("array_count_z", 1, 1, 64);
     public final ValueFloat arrayRelativeX = new ValueFloat("array_relative_x", 0F);
     public final ValueFloat arrayRelativeY = new ValueFloat("array_relative_y", 0F);
     public final ValueFloat arrayRelativeZ = new ValueFloat("array_relative_z", 0F);
@@ -170,6 +173,9 @@ public abstract class Form extends ValueGroup
         this.add(this.trackName);
         this.add(this.lighting);
         this.arrayCount.invisible();
+        this.arrayCountX.invisible();
+        this.arrayCountY.invisible();
+        this.arrayCountZ.invisible();
         this.arrayRelativeX.invisible();
         this.arrayRelativeY.invisible();
         this.arrayRelativeZ.invisible();
@@ -183,6 +189,9 @@ public abstract class Form extends ValueGroup
         this.arrayScaleY.invisible();
         this.arrayScaleZ.invisible();
         this.add(this.arrayCount);
+        this.add(this.arrayCountX);
+        this.add(this.arrayCountY);
+        this.add(this.arrayCountZ);
         this.add(this.arrayRelativeX);
         this.add(this.arrayRelativeY);
         this.add(this.arrayRelativeZ);
