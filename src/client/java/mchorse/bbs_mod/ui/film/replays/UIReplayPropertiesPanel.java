@@ -8,6 +8,8 @@ import java.util.function.Supplier;
 
 import mchorse.bbs_mod.film.replays.Replay;
 import mchorse.bbs_mod.forms.forms.Form;
+import mchorse.bbs_mod.forms.forms.MobForm;
+import mchorse.bbs_mod.l10n.keys.IKey;
 import mchorse.bbs_mod.settings.values.base.BaseValue;
 import mchorse.bbs_mod.ui.UIKeys;
 import mchorse.bbs_mod.ui.film.UIFilmPanel;
@@ -56,6 +58,7 @@ public class UIReplayPropertiesPanel extends UIElement
     public UITrackpad relativeOffsetZ;
     public UIToggle axesPreview;
     public UIButton pickAxesPreviewBone;
+    public UIButton playerBodyDisassembler;
 
     private UIReplayList list;
 
@@ -165,6 +168,31 @@ public class UIReplayPropertiesPanel extends UIElement
             }
         });
 
+        /* Direct entry point from the selected replay. A replay with no display form gets a
+         * player MobForm so the body editor is reachable without hunting through the form UI.
+         * Existing non-Mob forms are never silently replaced. */
+        this.playerBodyDisassembler = new UIButton(IKey.constant("Player Body Disassembler"), (b) ->
+        {
+            Replay selected = this.replay;
+
+            if (selected == null || this.list == null)
+            {
+                return;
+            }
+
+            Form form = selected.form.get();
+
+            if (form == null)
+            {
+                MobForm player = new MobForm();
+                player.mobID.set("minecraft:player");
+                selected.form.set(player);
+                this.pickEdit.setForm(player);
+            }
+
+            this.list.openFormEditor(selected.form, true, this.pickEdit::setForm);
+        });
+
         UISection shadowSection = new UISection(UIKeys.FILM_REPLAY_SHADOW);
 
         shadowSection.fields.add(
@@ -184,7 +212,7 @@ public class UIReplayPropertiesPanel extends UIElement
         other.setExpanded(false);
 
         this.properties = UI.scrollView(UIConstants.MARGIN, UIConstants.SCROLL_PADDING,
-            this.pickEdit, this.enabled, this.label, this.nameTag,
+            this.pickEdit, this.playerBodyDisassembler, this.enabled, this.label, this.nameTag,
             shadowSection,
             other
         );
