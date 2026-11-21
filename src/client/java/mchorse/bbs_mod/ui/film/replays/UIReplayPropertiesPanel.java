@@ -207,7 +207,8 @@ public class UIReplayPropertiesPanel extends UIElement
             {
                 selected.form.set(FormUtils.copy(edited));
                 this.pickEdit.setForm(edited);
-                this.list.updateFilmEditor();
+                this.filmPanel.getController().createEntities();
+                this.filmPanel.replayEditor.updateChannelsList();
             });
         });
 
