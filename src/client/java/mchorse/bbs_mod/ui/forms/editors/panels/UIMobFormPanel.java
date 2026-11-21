@@ -8,6 +8,7 @@ import mchorse.bbs_mod.forms.renderers.mob.PlayerBodyParts.Part;
 import mchorse.bbs_mod.l10n.keys.IKey;
 import mchorse.bbs_mod.ui.framework.elements.UISection;
 import mchorse.bbs_mod.resources.Link;
+import mchorse.bbs_mod.settings.values.IValueListener;
 import mchorse.bbs_mod.ui.UIKeys;
 import mchorse.bbs_mod.ui.forms.editors.forms.UIForm;
 import mchorse.bbs_mod.ui.forms.editors.panels.widgets.UIMobEditor;
@@ -95,6 +96,7 @@ public class UIMobFormPanel extends UIFormPanel<MobForm>
 
         MobRig rig = MobFormRenderer.getRig(this.form);
         java.util.Map<Part, net.minecraft.client.model.ModelPart> parts = PlayerBodyParts.resolve(this.form, rig);
+        this.form.disassemblyPose.preNotify(IValueListener.FLAG_UNMERGEABLE);
         mchorse.bbs_mod.utils.pose.Pose pose = this.form.disassemblyPose.get();
         pose.transforms.clear();
 
@@ -114,6 +116,7 @@ public class UIMobFormPanel extends UIFormPanel<MobForm>
             }
         }
 
+        this.form.disassemblyPose.postNotify(IValueListener.FLAG_UNMERGEABLE);
         this.form.bumpPoseVersion();
         this.disassemblyEditor.setPose(pose, "player_disassembly");
     }
@@ -122,7 +125,9 @@ public class UIMobFormPanel extends UIFormPanel<MobForm>
     {
         if (this.form == null) return;
 
+        this.form.disassemblyPose.preNotify(IValueListener.FLAG_UNMERGEABLE);
         this.form.disassemblyPose.get().transforms.clear();
+        this.form.disassemblyPose.postNotify(IValueListener.FLAG_UNMERGEABLE);
         this.form.bumpPoseVersion();
         this.disassemblyEditor.setPose(this.form.disassemblyPose.get(), "player_disassembly");
     }
