@@ -56,7 +56,7 @@ public abstract class Form extends ValueGroup
     public final ValueFloat lighting = new ValueFloat("lighting", 1F);
 
     /* Form-level Array modifier. Count includes the original form. */
-    public final ValueInt arrayCount = new ValueInt("array_count", 1);
+    public final ValueInt arrayCount = new ValueInt("array_count", 1, 1, 64);
     public final ValueFloat arrayRelativeX = new ValueFloat("array_relative_x", 0F);
     public final ValueFloat arrayRelativeY = new ValueFloat("array_relative_y", 0F);
     public final ValueFloat arrayRelativeZ = new ValueFloat("array_relative_z", 0F);
