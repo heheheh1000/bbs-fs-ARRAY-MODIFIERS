@@ -482,6 +482,8 @@ public class BBSModClient implements ClientModInitializer
     @Override
     public void onInitializeClient()
     {
+        mchorse.bbs_mod.forms.renderers.ThanosSnapRenderer.register();
+
         /* Every resource reload: the pack list changed, or the user pressed F3+T. It fires before the
          * client has started too, which reloadFromResourcePacks sits out. */
         ResourceManagerHelper.get(ResourceType.CLIENT_RESOURCES).registerReloadListener(new SimpleSynchronousResourceReloadListener()
