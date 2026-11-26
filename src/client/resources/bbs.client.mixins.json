@@ -25,7 +25,6 @@
         "LivingEntityUpdateMixin",
         "LivingEntityRendererMixin",
         "ModelPartMixin",
-        "ThanosSnapCuboidMixin",
         "iris.SystemTimeUniformsTimerMixin",
         "iris.CelestialUniformsMixin",
         "iris.ShadowMatricesMixin",
