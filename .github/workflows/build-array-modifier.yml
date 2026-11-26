@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - array-modifier-1.20.1
+      - thanos-snap-1.20.1
   workflow_dispatch:
 
 permissions:
