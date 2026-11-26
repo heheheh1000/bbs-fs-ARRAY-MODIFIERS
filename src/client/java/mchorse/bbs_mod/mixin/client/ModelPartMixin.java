@@ -2,7 +2,10 @@ package mchorse.bbs_mod.mixin.client;
 
 import mchorse.bbs_mod.forms.renderers.mob.IBBSModelPart;
 import mchorse.bbs_mod.forms.renderers.mob.MobRenderContext;
+import mchorse.bbs_mod.forms.renderers.mob.ThanosSnapFragments;
 import net.minecraft.client.model.ModelPart;
+import net.minecraft.client.render.VertexConsumer;
+import net.minecraft.client.util.math.MatrixStack;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -19,6 +22,7 @@ import java.util.Map;
 public abstract class ModelPartMixin implements IBBSModelPart
 {
     @Shadow @Final private Map<String, ModelPart> children;
+    @Shadow @Final private List<ModelPart.Cuboid> cuboids;
 
     @Unique
     private String bbs$name;
@@ -56,18 +60,6 @@ public abstract class ModelPartMixin implements IBBSModelPart
         return this.children;
     }
 
-    /**
-     * The bone id a mob form's part draws with while the pick buffer is being filled.
-     *
-     * <p>The picker shader reads the light channel as an offset from the form's own id, so
-     * overriding the argument here is what turns one flat mob silhouette into a per-limb id map.
-     * It has to be the argument rather than the cuboid draw: vanilla passes the same {@code light}
-     * down to the children, so every part inherits its parent's id until its own hook replaces it
-     * - which is exactly right for a sub-part the rig does not know about.</p>
-     *
-     * <p>This runs for every model part in the game, so the guard is one static field read and
-     * nothing else.</p>
-     */
     @ModifyVariable(method = "render(Lnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumer;IIFFFF)V", at = @At("HEAD"), ordinal = 0, argsOnly = true)
     private int bbs$pickingLight(int light)
     {
@@ -77,11 +69,49 @@ public abstract class ModelPartMixin implements IBBSModelPart
     }
 
     /**
-     * Names and links the whole tree, one part at a time. The tree is assembled bottom-up, so by
-     * the time any part is constructed its children already exist and their names are right here
-     * in the constructor's own argument — no traversal, no reflection, and it costs one pass over
-     * a handful of entries per part, once per resource reload.
+     * Replace the model part's complete cuboid pass at the point where vanilla has already
+     * applied this bone's transform. This is deliberately on ModelPart.renderCuboids rather
+     * than Cuboid.renderCuboid: it is the common vanilla entry point for every cuboid and avoids
+     * depending on the nested cuboid method being reached by optimized render paths.
      */
+    @Inject(
+        method = "renderCuboids(Lnet/minecraft/client/util/math/MatrixStack$Entry;Lnet/minecraft/client/render/VertexConsumer;IIFFFF)V",
+        at = @At("HEAD"),
+        cancellable = true
+    )
+    private void bbs$renderSnapCuboids(
+        MatrixStack.Entry entry,
+        VertexConsumer vertices,
+        int light,
+        int overlay,
+        float red,
+        float green,
+        float blue,
+        float alpha,
+        CallbackInfo info
+    )
+    {
+        MobRenderContext context = MobRenderContext.current();
+
+        if (context == null || context.isPicking() || context.dissolveProgress() <= 0F)
+        {
+            return;
+        }
+
+        float progress = context.dissolveProgress();
+
+        for (ModelPart.Cuboid cuboid : this.cuboids)
+        {
+            if (!ThanosSnapFragments.render(cuboid, entry, vertices, light, overlay, red, green, blue, alpha, progress))
+            {
+                cuboid.renderCuboid(entry, vertices, light, overlay, red, green, blue, alpha);
+            }
+        }
+
+        /* We rendered every cuboid ourselves: never let vanilla draw the intact body over it. */
+        info.cancel();
+    }
+
     @Inject(method = "<init>", at = @At("RETURN"))
     private void bbs$nameChildren(List<ModelPart.Cuboid> cuboids, Map<String, ModelPart> children, CallbackInfo info)
     {
