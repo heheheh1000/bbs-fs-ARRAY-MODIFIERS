@@ -32,7 +32,6 @@ public final class ThanosSnapRenderer
         {
             context.stack.push();
             context.stack.scale(0F, 0F, 0F);
-            context.stack.push();
             HIDDEN_FOR_PASS.add(form);
         }
     }
@@ -43,7 +42,6 @@ public final class ThanosSnapRenderer
     {
         if (HIDDEN_FOR_PASS.remove(form) && context != null && context.stack != null)
         {
-            context.stack.pop();
             context.stack.pop();
         }
     }
