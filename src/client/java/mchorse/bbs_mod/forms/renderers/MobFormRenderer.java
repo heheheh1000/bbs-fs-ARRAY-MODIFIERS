@@ -383,6 +383,13 @@ public class MobFormRenderer extends FormRenderer<MobForm> implements ITickable
             }
             else
             {
+                /* The Thanos pass also needs vanilla's per-ModelPart recursion. Sodium otherwise
+                 * batches the complete model tree in one operation and bypasses ModelPartMixin. */
+                if (this.form.thanosSnapEnabled.get() && this.form.thanosSnapProgress.get() > 0F)
+                {
+                    consumers.setSubstitute(MobPickerVertexConsumer::new);
+                }
+
                 CustomVertexConsumerProvider.hijackVertexFormat((layer) ->
                 {
                     if (!first.bool)
