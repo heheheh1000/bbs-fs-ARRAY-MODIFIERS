@@ -32,3 +32,13 @@ accessible method net/minecraft/entity/LivingEntity setLivingFlag (IZ)V
 # own method, and an actor is not a player - it sets the two fields by hand
 accessible field net/minecraft/entity/LivingEntity riptideTicks I
 
+
+# Thanos Snap needs the vanilla cuboid face UVs to texture every generated shard.
+accessible class net/minecraft/client/model/ModelPart$Quad
+accessible class net/minecraft/client/model/ModelPart$Vertex
+accessible field net/minecraft/client/model/ModelPart$Cuboid sides [Lnet/minecraft/client/model/ModelPart$Quad;
+accessible field net/minecraft/client/model/ModelPart$Quad vertices [Lnet/minecraft/client/model/ModelPart$Vertex;
+accessible field net/minecraft/client/model/ModelPart$Quad direction Lorg/joml/Vector3f;
+accessible field net/minecraft/client/model/ModelPart$Vertex pos Lorg/joml/Vector3f;
+accessible field net/minecraft/client/model/ModelPart$Vertex u F
+accessible field net/minecraft/client/model/ModelPart$Vertex v F
