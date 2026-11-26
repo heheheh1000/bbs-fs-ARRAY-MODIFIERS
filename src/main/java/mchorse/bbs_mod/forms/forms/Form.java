@@ -55,6 +55,15 @@ public abstract class Form extends ValueGroup
     public final ValueString trackName = new ValueString("track_name", "");
     public final ValueFloat lighting = new ValueFloat("lighting", 1F);
 
+    /** Animated Thanos Snap disintegration controls. Progress is a 0..1 timeline track. */
+    public final ValueBoolean thanosSnapEnabled = new ValueBoolean("thanos_snap_enabled", false);
+    public final ValueFloat thanosSnapProgress = new ValueFloat("thanos_snap_progress", 0F, 0F, 1F).slider(0.01);
+    public final ValueFloat thanosSnapDensity = new ValueFloat("thanos_snap_density", 18F, 1F, 64F).slider(1);
+    public final ValueFloat thanosSnapSpread = new ValueFloat("thanos_snap_spread", 0.75F, 0.1F, 3F).slider(0.05);
+    public final ValueFloat thanosSnapWindX = new ValueFloat("thanos_snap_wind_x", 0.25F, -2F, 2F).slider(0.05);
+    public final ValueFloat thanosSnapWindY = new ValueFloat("thanos_snap_wind_y", 0.35F, -2F, 2F).slider(0.05);
+    public final ValueFloat thanosSnapWindZ = new ValueFloat("thanos_snap_wind_z", 0F, -2F, 2F).slider(0.05);
+
     /* Form-level 3D Array modifier. Each axis count includes the original form. */
     public final ValueInt arrayCount = new ValueInt("array_count", 1, 1, 64); // Legacy one-axis count
     public final ValueInt arrayCountX = new ValueInt("array_count_x", 1, 1, 64);
@@ -172,6 +181,14 @@ public abstract class Form extends ValueGroup
         this.add(this.disabledTracks);
         this.add(this.trackName);
         this.add(this.lighting);
+
+        this.add(this.thanosSnapEnabled);
+        this.add(this.thanosSnapProgress);
+        this.add(this.thanosSnapDensity);
+        this.add(this.thanosSnapSpread);
+        this.add(this.thanosSnapWindX);
+        this.add(this.thanosSnapWindY);
+        this.add(this.thanosSnapWindZ);
         this.arrayCount.invisible();
         this.arrayCountX.invisible();
         this.arrayCountY.invisible();

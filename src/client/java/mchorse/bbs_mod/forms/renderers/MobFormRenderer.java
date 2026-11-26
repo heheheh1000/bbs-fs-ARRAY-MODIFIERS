@@ -383,6 +383,13 @@ public class MobFormRenderer extends FormRenderer<MobForm> implements ITickable
             }
             else
             {
+                /* The Thanos pass also needs vanilla's per-ModelPart recursion. Sodium otherwise
+                 * batches the complete model tree in one operation and bypasses ModelPartMixin. */
+                if (this.form.thanosSnapEnabled.get() && this.form.thanosSnapProgress.get() > 0F)
+                {
+                    consumers.setSubstitute(MobPickerVertexConsumer::new);
+                }
+
                 CustomVertexConsumerProvider.hijackVertexFormat((layer) ->
                 {
                     if (!first.bool)
@@ -438,7 +445,12 @@ public class MobFormRenderer extends FormRenderer<MobForm> implements ITickable
                 MobRigMatrices.evaluate(this.entity, this.getRig(), this.getCombinedPose(), null, context.getTransition(), this.bones);
             }
 
-            MobRenderContext mob = MobRenderContext.push(this.getRig(), this.getCombinedPose(), null).picking(context.stencilMap);
+            MobRenderContext mob = MobRenderContext.push(
+                this.getRig(),
+                this.getCombinedPose(),
+                null,
+                !context.isPicking() && this.form.thanosSnapEnabled.get() ? this.form.thanosSnapProgress.get() : 0F
+            ).picking(context.stencilMap);
 
             try
             {

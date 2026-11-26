@@ -24,6 +24,7 @@ public class MobRenderContext
     private final MobRig rig;
     private final Pose pose;
     private final Pose poseOverlay;
+    private final float dissolveProgress;
     private final Map<ModelPart, Transform> saved = new IdentityHashMap<>();
 
     private StencilMap stencilMap;
@@ -37,7 +38,13 @@ public class MobRenderContext
     /** Arms the context. ALWAYS pair with {@link #pop()} in a finally. */
     public static MobRenderContext push(MobRig rig, Pose pose, Pose poseOverlay)
     {
-        MobRenderContext context = new MobRenderContext(rig, pose, poseOverlay);
+        return push(rig, pose, poseOverlay, 0F);
+    }
+
+    /** Arms the mob render with an optional 0..1 body-part dissolve progress. */
+    public static MobRenderContext push(MobRig rig, Pose pose, Pose poseOverlay, float dissolveProgress)
+    {
+        MobRenderContext context = new MobRenderContext(rig, pose, poseOverlay, dissolveProgress);
 
         context.previous = current;
         current = context;
@@ -45,16 +52,49 @@ public class MobRenderContext
         return context;
     }
 
-    private MobRenderContext(MobRig rig, Pose pose, Pose poseOverlay)
+    private MobRenderContext(MobRig rig, Pose pose, Pose poseOverlay, float dissolveProgress)
     {
         this.rig = rig;
         this.pose = pose;
         this.poseOverlay = poseOverlay;
+        this.dissolveProgress = Math.max(0F, Math.min(1F, dissolveProgress));
+    }
+
+    /**
+     * Stable per-bone threshold: parts disappear in a deterministic, scattered order rather
+     * than all at once. Picking passes never call this because their context progress is zero.
+     */
+    public boolean shouldDissolve(ModelPart part)
+    {
+        if (this.dissolveProgress <= 0F || this.rig == null)
+        {
+            return false;
+        }
+
+        int index = this.rig.index(part);
+
+        if (index < 0)
+        {
+            return false;
+        }
+
+        int hash = index * 0x45d9f3b;
+        hash = (hash ^ (hash >>> 16)) * 0x45d9f3b;
+        hash ^= hash >>> 16;
+        float threshold = (hash & 0x7fffffff) / (float) Integer.MAX_VALUE;
+
+        return this.dissolveProgress >= threshold;
     }
 
     public MobRig rig()
     {
         return this.rig;
+    }
+
+    /** Current keyframed Thanos dissolve amount, or zero outside the effect. */
+    public float dissolveProgress()
+    {
+        return this.dissolveProgress;
     }
 
     /** Arms the id pass: from here on every model part draws with its own id in the light channel. */
