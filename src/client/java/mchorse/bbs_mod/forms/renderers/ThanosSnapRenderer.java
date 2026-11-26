@@ -5,7 +5,7 @@ import mchorse.bbs_mod.forms.forms.Form;
 import mchorse.bbs_mod.forms.renderers.FormRenderingContext;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.particle.ParticleTypes;
-import net.minecraft.world.World;
+import net.minecraft.client.world.ClientWorld;
 
 import java.util.Collections;
 import java.util.IdentityHashMap;
@@ -60,7 +60,7 @@ public final class ThanosSnapRenderer
         emitParticles(form, context, progress);
 
         /* Keep the stack balanced through AFTER even if the form renderer throws. */
-        if (progress >= 0.999F)
+        if (progress >= 0.999F && context.stack != null)
         {
             context.stack.push();
             context.stack.scale(0F, 0F, 0F);
@@ -84,9 +84,9 @@ public final class ThanosSnapRenderer
         }
 
         MinecraftClient client = MinecraftClient.getInstance();
-        World world = client.world;
+        ClientWorld world = client.world;
 
-        if (world == null || !world.isClient)
+        if (world == null)
         {
             return;
         }
