@@ -91,6 +91,12 @@ public class MobRenderContext
         return this.rig;
     }
 
+    /** Current keyframed Thanos dissolve amount, or zero outside the effect. */
+    public float dissolveProgress()
+    {
+        return this.dissolveProgress;
+    }
+
     /** Arms the id pass: from here on every model part draws with its own id in the light channel. */
     public MobRenderContext picking(StencilMap stencilMap)
     {
