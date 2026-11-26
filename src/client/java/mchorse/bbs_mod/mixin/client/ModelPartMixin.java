@@ -77,6 +77,35 @@ public abstract class ModelPartMixin implements IBBSModelPart
     }
 
     /**
+     * Removes individual named model parts during the Thanos Snap render. The context is scoped
+     * to MobFormRenderer, so normal Minecraft entities and unrelated BBS forms are untouched.
+     */
+    @Inject(
+        method = "render(Lnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumer;IIFFFF)V",
+        at = @At("HEAD"),
+        cancellable = true
+    )
+    private void bbs$thanosSnapPart(
+        net.minecraft.client.util.math.MatrixStack matrices,
+        net.minecraft.client.render.VertexConsumer vertices,
+        int light,
+        int overlay,
+        float red,
+        float green,
+        float blue,
+        float alpha,
+        CallbackInfo info
+    )
+    {
+        MobRenderContext context = MobRenderContext.current();
+
+        if (context != null && context.shouldDissolve((ModelPart) (Object) this))
+        {
+            info.cancel();
+        }
+    }
+
+    /**
      * Names and links the whole tree, one part at a time. The tree is assembled bottom-up, so by
      * the time any part is constructed its children already exist and their names are right here
      * in the constructor's own argument — no traversal, no reflection, and it costs one pass over
